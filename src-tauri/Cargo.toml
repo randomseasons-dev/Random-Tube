@@ -1,0 +1,37 @@
+[package]
+name = "random-tube"
+version = "1.1.0"
+description = "Random Tube"
+authors = ["Dong Nguyen"]
+edition = "2021"
+
+[lib]
+name = "random_tube_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+# rustls everywhere: no OpenSSL on Android
+rustypipe = { version = "0.11.4", default-features = false, features = ["rustls-tls-webpki-roots"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-webpki-roots", "gzip", "stream", "json"] }
+axum = "0.8"
+futures = "0.3"
+bytes = "1"
+regex = "1"
+rand = "0.9"
+
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+
+# rquickjs (RustyPipe's JS engine) ships no prebuilt Android bindings: generate them
+# (needs LIBCLANG_PATH, see README)
+[target.'cfg(target_os = "android")'.dependencies]
+rquickjs-sys = { version = "0.9", features = ["bindgen"] }
